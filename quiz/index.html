@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDG Project Quiz</title>
+<style>
+:root{--bg:#F6FAF9;--card:#FFFFFF;--ink:#1B2A33;--sub:#5E707A;--teal:#0F6E7A;--dark:#0B3C49;--line:#DCE7E5;--ok:#2E7D32;--bad:#C62828}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1A1F;--card:#15252C;--ink:#E8F0EF;--sub:#9DB0B6;--teal:#4FB3BF;--dark:#0B3C49;--line:#24383F}}
+:root[data-theme="dark"]{--bg:#0E1A1F;--card:#15252C;--ink:#E8F0EF;--sub:#9DB0B6;--teal:#4FB3BF;--dark:#0B3C49;--line:#24383F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif;line-height:1.6}
+header{background:var(--dark);color:#fff;padding:28px 16px 22px}
+header .in,main{max-width:860px;margin:0 auto}
+h1{margin:0 0 4px;font-size:1.5rem}
+header p{margin:0;opacity:.85;font-size:.95rem}
+main{padding:16px}
+.en{color:var(--sub);font-style:italic;font-size:.88em;display:block}
+header .en{color:#CFE3E1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
+.steps{padding-left:1.2em;margin:.4em 0}
+.proj h2{margin:0 0 4px;font-size:1.2rem;color:var(--teal)}
+.tag{display:inline-block;font-size:.75rem;background:var(--teal);color:#fff;border-radius:99px;padding:1px 10px;margin-bottom:6px}
+.hint{font-size:.92rem;margin:8px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.sdg{border:none;border-radius:10px;color:#fff;padding:8px 6px;min-height:68px;font:inherit;font-size:.72rem;line-height:1.25;cursor:pointer;opacity:.38;transition:.15s;text-align:left;position:relative}
+.sdg b{display:block;font-size:1.15rem}
+.sdg.on{opacity:1;outline:3px solid var(--ink);outline-offset:1px}
+.sdg.right{opacity:1;box-shadow:0 0 0 3px var(--ok)}
+.sdg.right::after{content:"✓";position:absolute;right:6px;top:4px;font-size:1rem}
+.count{font-size:.85rem;color:var(--sub);margin-top:8px}
+textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:var(--bg);color:var(--ink)}
+.btn{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:12px 20px;font:inherit;font-weight:700;cursor:pointer;margin:6px 6px 0 0}
+.btn.ghost{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+.result{display:none}
+.result.show{display:block}
+.score{font-size:2rem;font-weight:800;color:var(--teal)}
+.ans{border-left:4px solid var(--teal);padding:6px 12px;margin:10px 0;background:var(--bg);border-radius:0 8px 8px 0}
+.pill{display:inline-block;color:#fff;border-radius:6px;padding:0 8px;margin:2px;font-weight:700;font-size:.85rem}
+footer{max-width:860px;margin:0 auto;padding:16px;color:var(--sub);font-size:.82rem}
+a{color:var(--teal)}
+</style>
+</head>
+<body>
+<header><div class="in">
+<h1>3つの研究プロジェクトとSDGs クイズ</h1>
+<p>2026 フレッシュマンセミナーII・社会実装セミナーI（総合理工学部）<span class="en">Which SDGs does each project connect to? — Freshman Seminar II / Social Implementation Seminar I</span></p>
+</div></header>
+<main>
+<div class="card">
+<b>やり方 / How to play</b>
+<ol class="steps">
+<li>名前か学籍番号を入れる（任意）。<span class="en">Enter your name or student ID (optional).</span></li>
+<li>各プロジェクトに関係が深いと思うSDGsを<b>最大3つ</b>選ぶ。<span class="en">Pick up to 3 SDGs for each project.</span></li>
+<li>理由を1文で書く。<span class="en">Write one sentence on why.</span></li>
+<li>「答え合わせ」を押す → 研究者の考えと比べる。<span class="en">Press “Check” and compare with the researchers’ view.</span></li>
+</ol>
+<input type="text" id="who" placeholder="名前 / 学籍番号（任意） Name or ID (optional)">
+</div>
+<div id="projects"></div>
+<div class="card">
+<button class="btn" id="check">答え合わせ / Check answers</button>
+<button class="btn ghost" id="reset">やり直す / Reset</button>
+</div>
+<div class="card result" id="result">
+<div>あなたのスコア / Your score</div>
+<div class="score" id="score"></div>
+<div id="answers"></div>
+<p class="hint"><b>グループで話そう（5分）</b>：答えが違ったSDGを1つ選び、「なぜそう思ったか」を説明し合おう。正解は1つではありません！<span class="en">Group talk (5 min): pick one SDG where you differed and explain your reasons. There is more than one good answer!</span></p>
+<button class="btn ghost" id="copy">結果をコピー / Copy my answers</button>
+</div>
+</main>
+<footer>Riaz-ul-haque Mian, Shimane University · スライド / slides: <a href="../slides/">slides</a></footer>
+<script>
+const SDG=[
+[1,"貧困をなくそう","#E5243B"],[2,"飢餓をゼロに","#DDA63A"],[3,"すべての人に健康と福祉を","#4C9F38"],[4,"質の高い教育をみんなに","#C5192D"],
+[5,"ジェンダー平等を実現しよう","#FF3A21"],[6,"安全な水とトイレを世界中に","#26BDE2"],[7,"エネルギーをみんなに そしてクリーンに","#FCC30B"],
+[8,"働きがいも経済成長も","#A21942"],[9,"産業と技術革新の基盤をつくろう","#FD6925"],[10,"人や国の不平等をなくそう","#DD1367"],
+[11,"住み続けられるまちづくりを","#FD9D24"],[12,"つくる責任 つかう責任","#BF8B2E"],[13,"気候変動に具体的な対策を","#3F7E44"],
+[14,"海の豊かさを守ろう","#0A97D9"],[15,"陸の豊かさも守ろう","#56C02B"],[16,"平和と公正をすべての人に","#00689D"],[17,"パートナーシップで目標を達成しよう","#19486A"]];
+const P=[
+{id:"shinji",tag:"Project 1",jp:"宍道湖：水草（沈水植物）をAIで見守る",en:"Lake Shinji: monitoring underwater plants with AI",
+ desc:"汽水湖・宍道湖で、水中ドローン（ROV）の映像、水質の測定、現場メモをAIで組み合わせ、にごった水の中でも水草の変化を正しく見つける。",
+ den:"Combine underwater-drone (ROV) video, water measurements and field notes with AI to track underwater plants in the brackish Lake Shinji, even in murky water.",
+ main:[14,6,15],sub:[13,17],
+ why:"水草は魚や生き物のすみか（14・15）、水をきれいにする（6）。炭素をためる（13）。大学・研究センター・海外大学の協力（17）。",
+ wen:"Seagrass is habitat for fish (14, 15) and cleans water (6); it stores carbon (13); partners: university, research centre, overseas university (17)."},
+{id:"tomata",tag:"Project 2",jp:"苫田ダム：カメラと衛星でアオコを見つける",en:"Tomata Dam: finding algal blooms with cameras and satellites",
+ desc:"岡山県の苫田ダム（奥津湖）で、岸のライブカメラと人工衛星の画像をAIで組み合わせ、雲の日でもアオコを早く見つける。",
+ den:"At Tomata Dam (Lake Okutsu, Okayama), combine shore cameras and satellite images with AI to detect algal blooms early, even on cloudy days.",
+ main:[6,13,9],sub:[17,3],
+ why:"飲み水を守る（6）。温暖化でアオコが増える（13）。AI・衛星の新しい技術（9）。ダム管理所や国際チームとの協力（17）。毒から健康を守る（3）。",
+ wen:"Protects drinking water (6); warming increases blooms (13); new AI and satellite technology (9); dam office and international team (17); protects health from toxins (3)."},
+{id:"matsue",tag:"Project 3",jp:"松江のイベント：「言うこと」と「すること」",en:"Matsue events: what people say and what they do",
+ desc:"松江の朝市などで、来場者インタビュー（言葉）とビデオの人の動き（映像）をAIで比べ、人が集まるイベント空間をデザインする。",
+ den:"At pop-up markets in Matsue, compare visitor interviews (language) and video of movement (vision) with AI to design event spaces that bring people in.",
+ main:[11,10,8],sub:[17,4],
+ why:"人口が減る街を元気にする（11）。日本人も外国人も、子ども連れも過ごしやすく（10）。地元の小さなお店を応援（8）。主催者・市民との協力（17）。",
+ wen:"Revitalises a shrinking city (11); inclusive for Japanese, international visitors and families (10); supports small local shops (8); work with organisers and citizens (17)."}];
+const pick={};
+const root=document.getElementById('projects');
+P.forEach(p=>{pick[p.id]=new Set();
+ const c=document.createElement('div');c.className='card proj';
+ c.innerHTML=`<span class="tag">${p.tag}</span><h2>${p.jp}</h2><span class="en">${p.en}</span>
+ <p class="hint">${p.desc}<span class="en">${p.den}</span></p>
+ <div class="grid" id="g-${p.id}"></div><div class="count" id="c-${p.id}">0 / 3</div>
+ <p class="hint" style="margin-bottom:4px">理由（1文）/ Why? (one sentence)</p><textarea rows="2" id="r-${p.id}"></textarea>`;
+ root.appendChild(c);
+ const g=c.querySelector('.grid');
+ SDG.forEach(([n,name,col])=>{const b=document.createElement('button');b.className='sdg';b.style.background=col;b.dataset.n=n;
+  b.innerHTML=`<b>${n}</b>${name}`;b.onclick=()=>{const s=pick[p.id];
+   if(s.has(n)){s.delete(n);b.classList.remove('on')}else{if(s.size>=3)return;s.add(n);b.classList.add('on')}
+   document.getElementById('c-'+p.id).textContent=s.size+' / 3';};g.appendChild(b);});
+});
+const pill=n=>{const s=SDG[n-1];return `<span class="pill" style="background:${s[2]}">${n}</span>`};
+document.getElementById('check').onclick=()=>{let pts=0,max=0;let html='';
+ P.forEach(p=>{const s=pick[p.id];max+=3;
+  s.forEach(n=>{if(p.main.includes(n))pts+=1;else if(p.sub.includes(n))pts+=0.5;});
+  document.querySelectorAll('#g-'+p.id+' .sdg').forEach(b=>{const n=+b.dataset.n;b.classList.toggle('right',p.main.includes(n)||p.sub.includes(n))});
+  html+=`<div class="ans"><b>${p.jp}</b><br>メイン / main: ${p.main.map(pill).join('')} 関連 / related: ${p.sub.map(pill).join('')}<br>あなた / you: ${[...s].map(pill).join('')||'—'}<br>${p.why}<span class="en">${p.wen}</span></div>`;});
+ document.getElementById('score').textContent=pts+' / '+max;
+ document.getElementById('answers').innerHTML=html+'<p class="hint">メイン=1点、関連=0.5点 / main = 1 pt, related = 0.5 pt</p>';
+ const r=document.getElementById('result');r.classList.add('show');r.scrollIntoView({behavior:'smooth'});};
+document.getElementById('reset').onclick=()=>location.reload();
+document.getElementById('copy').onclick=()=>{const t=[document.getElementById('who').value||'(no name)'];
+ P.forEach(p=>t.push(`${p.tag}: SDG ${[...pick[p.id]].join(', ')||'-'} | ${document.getElementById('r-'+p.id).value}`));
+ t.push('Score: '+document.getElementById('score').textContent);
+ const s=t.join('\n');try{navigator.clipboard.writeText(s);document.getElementById('copy').textContent='コピーしました / Copied'}catch(e){prompt('Copy:',s)}};
+</script>
+</body>
+</html>
