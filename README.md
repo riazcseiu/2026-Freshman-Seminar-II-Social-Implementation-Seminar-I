@@ -14,6 +14,6 @@ Dr Riaz-ul-haque Mian · Dept. of Information Systems Design and Data Science
 各プロジェクトに関係するSDGsを最大3つ選び、理由を書いて答え合わせをしよう。
 Pick up to 3 SDGs for each project, write why, then check.
 
-👉 **[クイズを開く / Open the quiz](https://raw.githack.com/riazcseiu/2026-Freshman-Seminar-II-Social-Implementation-Seminar-I/main/quiz/index.html)**
+👉 **[クイズを開く / Open the quiz](https://htmlpreview.github.io/?https://github.com/riazcseiu/2026-Freshman-Seminar-II-Social-Implementation-Seminar-I/blob/main/quiz/index.html)**
 
 Contact: riaz@cis.shimane-u.ac.jp
