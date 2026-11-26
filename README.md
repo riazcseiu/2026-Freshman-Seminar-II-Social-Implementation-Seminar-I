@@ -10,6 +10,11 @@ Dr Riaz-ul-haque Mian · Dept. of Information Systems Design and Data Science
 | 3 | 松江のイベント：「言うこと」と「すること」 / Matsue event project (JP/EN) | [03_Matsue_event_project_JP_EN.pdf](slides/03_Matsue_event_project_JP_EN.pdf) |
 | 4 | 宍道湖：水の中の草をAIで見守る / Lake Shinji project (JP/EN) | [04_Lake_Shinji_project_JP_EN.pdf](slides/04_Lake_Shinji_project_JP_EN.pdf) |
 
+## 📚 研究業績 / Publications
+プロジェクト別の論文リストとPDF（オープンアクセスのみ）→ **[publications/](publications/README.md)**
+- コンピュータビジョン：松江のイベント・宍道湖・苫田ダム / Computer vision
+- ハードウェア計算：十進演算・LSIテスト・FPGA / Hardware computing
+
 ## 🎯 SDGs クイズ / SDG quiz
 各プロジェクトに関係するSDGsを最大3つ選び、理由を書いて答え合わせをしよう。
 Pick up to 3 SDGs for each project, write why, then check.
